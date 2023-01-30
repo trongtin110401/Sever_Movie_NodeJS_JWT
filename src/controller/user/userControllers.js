@@ -1,46 +1,27 @@
 'use strict'
-
 const util = require('util')
 const mysql = require('mysql')
 const db = require('../../configs/connectDB')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
-module.exports = {
-    get: (req, res) => {
-        let sql = 'SELECT * FROM products'
-        db.query(sql, (err, response) => {
-            if (err) throw err
-            res.json(response)
-        })
-    },
-    detail: (req, res) => {
-        let sql = 'SELECT * FROM products WHERE id = ?'
-        db.query(sql, [req.params.productId], (err, response) => {
-            if (err) throw err
-            res.json(response[0])
-        })
-    },
-    update: (req, res) => {
-        let data = req.body;
-        let productId = req.params.productId;
-        let sql = 'UPDATE products SET ? WHERE id = ?'
-        db.query(sql, [data, productId], (err, response) => {
-            if (err) throw err
-            res.json({message: 'Update success!'})
-        })
-    },
-    store: (req, res) => {
-        let data = req.body;
-        let sql = 'INSERT INTO products SET ?'
-        db.query(sql, [data], (err, response) => {
-            if (err) throw err
-            res.json({message: 'Insert success!'})
-        })
-    },
-    delete: (req, res) => {
-        let sql = 'DELETE FROM products WHERE id = ?'
-        db.query(sql, [req.params.productId], (err, response) => {
-            if (err) throw err
-            res.json({message: 'Delete success!'})
+const get = async (req, res) => {
+       
+        const Account = req.Account;
+        const[rows,fields]= await db.execute('SELECT * FROM user where Account=?',[Account])
+        return res.status(200).json({
+            message:'ok',
+            data:rows
         })
     }
+const logout = async(req,res) =>{
+        const Account = req.Account
+        const refreshToken = null
+        db.execute('update user set refreshToken=? where Account = ?',[refreshToken,Account]);
+        return res.status(200).json({
+            message: 'logout ok' 
+        })
+}
+module.exports = {
+    get,logout
 }
