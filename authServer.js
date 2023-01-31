@@ -11,7 +11,7 @@ const port = process.env.PORT || 5000
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-
+// Tạo token
 const generateTokens = payload =>{
     const {Account} = payload
     console.log({Account:Account})
@@ -24,10 +24,13 @@ const generateTokens = payload =>{
     return {accessToken,refreshToken}
 }
 
+// Cập nhật RefeshToken
 const updateRefreshToken = async (Account,refreshToken) =>{
     await db.execute('update user set refreshToken=? where Account = ?',
         [refreshToken,Account]);
 }
+
+// Đăng nhập
 app.post('/login',async (req,res)=>{
     const Account = req.body.Account;
     const Password = req.body.Password;
@@ -61,6 +64,7 @@ app.post('/login',async (req,res)=>{
     })
 })
 
+// Lấy lại token bằng refreshToken
 app.post('/token',async (req,res)=>{
     const refreshToken = req.body.refreshToken;
     if(!refreshToken) return res.sendStatus(401);
